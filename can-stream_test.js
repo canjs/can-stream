@@ -1,17 +1,39 @@
 var QUnit = require('steal-qunit');
-var canStreamKefir = require('can-stream-kefir');
 var compute = require('can-compute');
 var DefineMap = require('can-define/map/map');
 var DefineList = require('can-define/list/list');
-
 var canStream = require('can-stream');
-// var canStream = canStream2(canStreamKefir);
 
 QUnit.module('can-stream');
 
 test('Compute changes can be streamed', function () {
 	var c = compute(0);
-	var stream = canStream.toStreamFromCompute(c);
+	var obj;
+	var canStreaming;
+
+
+
+	var canStreamInterface = {
+		toStream: function(observable, propOrEvent) {
+			QUnit.equal(c, observable);
+			return obj = {
+				onValue: function(callback) {
+					c.on('change', function(evnt, newVal, oldVal) {
+						callback(newVal);
+					});
+					callback(c()); //initial value;
+				}
+			};
+		},
+		toStreamFromProperty: function(observable, property) {},
+		toStreamFromEvent: function(observable, event) {},
+		toCompute: function(makeStream, context) {}
+	};
+	canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(c);
+	QUnit.equal(obj, stream);
+
 	var computeVal;
 
 	stream.onValue(function (newVal) {
@@ -32,7 +54,25 @@ test('Compute changes can be streamed', function () {
 
 test('Compute streams do not bind to the compute unless activated', function () {
 	var c = compute(0);
-	var stream = canStream.toStreamFromCompute(c);
+	var canStreamInterface = {
+		toStream: function(observable, propOrEvent) {
+			QUnit.equal(c, observable);
+			var obj;
+			return obj = {
+				onValue: function(callback) {
+					c.on('change', function(evnt, newVal, oldVal) {
+						callback(newVal);
+					});
+					callback(c()); //initial value;
+				}
+			};
+		},
+		toStreamFromProperty: function(observable, property) {},
+		toStreamFromEvent: function(observable, event) {},
+		toCompute: function(makeStream, context) {}
+	};
+	var canStreaming = canStream(canStreamInterface);
+	var stream = canStreaming.toStream(c);
 
 	QUnit.equal(c.computeInstance._bindings, undefined);
 
@@ -42,62 +82,34 @@ test('Compute streams do not bind to the compute unless activated', function () 
 });
 
 
-test('Compute stream values can be piped into a compute', function () {
-	var expected = 0;
-	var c1 = compute(0);
-	var c2 = compute(0);
-
-	var resultCompute = canStream.toStreamFromCompute(c1, c2, function (s1, s2) {
-		return s1.merge(s2);
-	});
-
-	resultCompute.onValue(function (val) {
-		QUnit.equal(val, expected);
-	});
-
-	expected = 1;
-	c1(1);
-
-	expected = 2;
-	c2(2);
-
-	expected = 3;
-	c1(3);
-});
-
-
-
-test('Computed streams fire change events', function () {
-	var expected = 0;
-	var c1 = compute(expected);
-	var c2 = compute(expected);
-
-	var resultCompute = canStream.toStreamFromCompute(c1, c2, function (s1, s2) {
-		return s1.merge(s2);
-	});
-
-	resultCompute.onValue(function (newVal) {
-		QUnit.equal(expected, newVal);
-	});
-
-	expected = 1;
-	c1(expected);
-
-	expected = 2;
-	c2(expected);
-
-	expected = 3;
-	c1(expected);
-});
-
-
 test('Stream on a property val - toStreamFromEvent', function(){
 	var expected = "bar";
 	var MyMap = DefineMap.extend({
-		foo: "bar"
+		foo: {
+			value: "bar"
+		}
 	});
+
+	var canStreamInterface = {
+		toStream: function(observable, propOrEvent) {},
+		toStreamFromProperty: function(observable, property) {},
+		toStreamFromEvent: function(observable, event) {
+			return {
+				onValue: function(callback) {
+					var ret = { target: {} };
+					ret.target[event] = observable[event];
+					observable.on(event, function(ev) {
+						callback(ev);
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {}
+	};
+	var canStreaming = canStream(canStreamInterface);
+
 	var map = new MyMap();
-	var stream = canStream.toStreamFromEvent(map, 'foo');
+	var stream = canStreaming.toStreamFromEvent(map, 'foo');
 
 	stream.onValue(function(ev){
 		QUnit.equal(ev.target.foo, expected);
@@ -109,10 +121,32 @@ test('Stream on a property val - toStreamFromEvent', function(){
 
 test('Stream on a property val - toStreamFromProperty', function(){
 	var expected = "bar";
-	var map = {
-		foo: "bar"
+	var MyMap = DefineMap.extend({
+		foo: {
+			value: "bar"
+		}
+	});
+
+	var canStreamInterface = {
+		toStream: function(observable, propOrEvent) {},
+		toStreamFromProperty: function(observable, property) {
+			return {
+				onValue: function(callback) {
+					var ret = { target: {} };
+					ret.target[property] = observable[property];
+					observable.on(property, function(ev, value) {
+						callback(value);
+					});
+				}
+			};
+		},
+		toStreamFromEvent: function(observable, event) {},
+		toCompute: function(makeStream, context) {}
 	};
-	var stream = canStream.toStreamFromProperty(map, 'foo');
+	var canStreaming = canStream(canStreamInterface);
+
+	var map = new MyMap();
+	var stream = canStreaming.toStreamFromProperty(map, 'foo');
 
 	stream.onValue(function(ev){
 		QUnit.equal(ev, expected);
@@ -126,14 +160,51 @@ test('Stream on a property val - toStreamFromProperty', function(){
 
 test('Multiple streams piped into single stream - toStreamFromProperty', function(){
 	var expected = "bar";
-	var map = {
-		foo: "bar",
-		foo2: "bar"
-	};
-	var stream1 = canStream.toStreamFromProperty(map, 'foo');
-	var stream2 = canStream.toStreamFromProperty(map, 'foo2');
 
-	var singleStream = canStream.toSingleStream(stream1, stream2);
+	var map = new DefineMap({
+		foo: {
+			value: "bar"
+		},
+		foo2: {
+			value: "bar"
+		}
+	});
+
+	var canStreamInterface = {
+		toStream: function(observable, propOrEvent) {},
+		toStreamFromProperty: function(observable, property) {
+			return {
+				onValue: function(callback) {
+					var ret = { target: {} };
+					ret.target[property] = observable[property];
+					observable.on(property, function(ev, value) {
+						callback(value);
+					});
+				}
+			};
+		},
+		toStreamFromEvent: function(observable, event) {},
+		toCompute: function(makeStream, context) {},
+		mergeStreams: function(s1, s2) {
+			var singleStream;
+			singleStream = {
+				onValue: function(callback) {
+					var changeHandler = function(value) {
+						callback(value);
+					};
+					s1.onValue(changeHandler);
+					s2.onValue(changeHandler);
+				}
+			};
+			return singleStream;
+		}
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream1 = canStreaming.toStreamFromProperty(map, 'foo');
+	var stream2 = canStreaming.toStreamFromProperty(map, 'foo2');
+
+	var singleStream = canStreaming.mergeStreams(stream1, stream2);
 
 	singleStream.onValue(function(ev){
 		QUnit.equal(ev, expected);
@@ -156,9 +227,29 @@ test('Event streams fire change events', function () {
 			value: []
 		}
 	});
+
+	var canStreamInterface = {
+		toStream: function(observable, propOrEvent) {},
+		toStreamFromProperty: function(observable, property) {},
+		toStreamFromEvent: function(observable, event) {
+			return {
+				onValue: function(callback) {
+					var ret = { target: {} };
+					ret.target[event] = observable[event];
+					observable.on(event, function(ev) {
+						callback(ev);
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+		mergeStreams: function(s1, s2) {}
+	};
+	var canStreaming = canStream(canStreamInterface);
+
 	var map = new MyMap();
 
-	var stream = canStream.toStreamFromEvent(map.fooList, 'length');
+	var stream = canStreaming.toStreamFromEvent(map.fooList, 'length');
 
 	stream.onValue(function(ev){
 		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
@@ -172,6 +263,7 @@ test('Event streams fire change events', function () {
 
 });
 
+/*
 test('Convert an observable nested property into an event stream #2b', function() {
 	var expected = 1;
 	var MyMap = DefineMap.extend({
@@ -445,3 +537,4 @@ test("setting test", function(){
 	// immediate value
 	QUnit.equal( c(), 5);
 });
+*/
