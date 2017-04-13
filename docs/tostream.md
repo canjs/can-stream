@@ -5,17 +5,19 @@
 @description Provides a shorthand for creating a stream from observable objects, properties and
 events.
 
-@signature `canStream.toStream( compute )`
+@signature `canStream.toStream( observable, propAndOrEvent )`
 
-  Creates a stream from a [can-compute] compute. This stream gets updated whenever the compute value changes.
+  Creates a stream from a [can-compute] compute or an observable. This stream gets updated whenever the observable value changes.
 
   ```js
   var compute = require('can-compute');
-  var canStream = require('can-stream-kefir');
+  var canStreamKefir = require('can-stream-kefir');
+  var canStream = require('can-stream');
+  var canStreaming = canStream(canStreamKefir);
 
   var c1 = compute(0);
 
-  var resultCompute = canStream.toStream(c1);
+  var resultCompute = canStreaming.toStream(c1);
 
   resultCompute.onValue(function (val) {
     console.log(val);
@@ -36,10 +38,12 @@ events.
   ```js
   var DefineList = require('can-define/list/list');
   var canStream = require('can-stream-kefir');
+  var canStream = require('can-stream');
+  var canStreaming = canStream(canStreamKefir);
 
   var hobbies = new DefineList(["js","kayaking"]);
 
-  var changeCount = canStream.toStream(hobbies, "length").scan(function(prev){
+  var changeCount = canStreaming.toStream(hobbies, "length").scan(function(prev){
 	  return prev + 1;
   }, 0);
   changeCount.onValue(function(event) {
@@ -56,15 +60,18 @@ events.
   Promises can work too.
   @param {String} eventName An observable event name.
 
-  @return {String} A [Kefir](https://rpominov.github.io/kefir/) stream make up of the event objects dispatched on `obs`.
+  @return {String} A stream make up of the event objects dispatched on `obs`.
 
 
 @signature `canStream.toStream( obs, ".propName" )`
 
-  Creates a stream from an observable property value. This is a shorthand for [can-stream-kefir.toStreamFromProperty].
+  Creates a stream from an observable property value. This is a shorthand for [can-stream.toStreamFromProperty].
 
   ```js
-  var canStream = require('can-stream-kefir');
+  var canStreamKefir = require('can-stream-kefir');
+  var canStream = require('can-stream');
+  var canStreaming = canStream(canStreamKefir);
+
   var DefineMap = require("can-define/map/map");
 
   var person = new DefineMap({
@@ -72,8 +79,8 @@ events.
 	  last: "Meyer"
   });
 
-  var first = canStream.toStream(person, '.first'),
-      last = canStream.toStream(person, '.last');
+  var first = canStreaming.toStream(person, '.first'),
+      last = canStreaming.toStream(person, '.last');
 
   var fullName = Kefir.combine(first, last, function(first, last){
 	  return first + last;
@@ -93,14 +100,17 @@ events.
     Promises can work too.
   @param {String} propName A property name.  Multiple property names can be provided like `".foo.bar.car"`
 
-  @return {String} A [Kefir](https://rpominov.github.io/kefir/) stream of values at the specified `propName`.
+  @return {String} A stream of values at the specified `propName`.
 
 @signature `canStream.toStream( obs, ".propName eventName" )`
 
   Creates a stream from an observable property value. This is a shorthand for the second signature of [can-stream-kefir.toStreamFromEvent].
 
   ```js
-  var canStream = require('can-stream-kefir');
+  var canStreamKefir = require('can-stream-kefir');
+  var canStream = require('can-stream');
+  var canStreaming = canStream(canStreamKefir);
+
   var DefineMap = require("can-define/map/map");
   var DefineList = require("can-define/list/list");
 
@@ -108,7 +118,7 @@ events.
       todos: ["mow lawn"]
   });
 
-  var addStream = canStream.toStream(me, ".todos add");
+  var addStream = canStreaming.toStream(me, ".todos add");
 
   addStream.onValue(function(event){
       console.log(event);
@@ -125,4 +135,4 @@ events.
 
   @param {String} propName A property name.  Multiple property names can be provided like `".foo.bar.car"`
   @param {String} eventName An observable event name.
-  @return {String} A [Kefir](https://rpominov.github.io/kefir/) stream of the `eventName` event objects dispatched on the objects specified by `propName`.
+  @return {String} A stream of the `eventName` event objects dispatched on the objects specified by `propName`.

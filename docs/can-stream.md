@@ -3,42 +3,32 @@
 @group can-stream.fns 1 Methods
 @package ../package.json
 
-@description Convert observable values into streams. [Kefir](https://rpominov.github.io/kefir/) is used internally to provide the stream functionality.
+@description Exports a function that takes a can-stream interface (like [can-stream-kefir(https://github.com/canjs/can-stream-kefir)) and uses it internally to provide the stream functionality.
 
 @type {Object}
 
-  The `can-stream` module exports methods useful for converting observable values like [can-compute]s
-  or [can-define/map/map] properties into streams.
+  The `can-stream` module exports methods Exports a function that takes a can-stream interface and returns an object with the following methods:
 
-  ```js
-  var canStream = require("can-stream");
-  var DefineMap = require("can-define/map/map");
-
-  var me = new DefineMap({name: "Justin"});
-
-  var nameStream = canStream.toStream(me,".name");
-
-
-  nameStream.onValue(function(name){
-	  // name -> "Obaid";
-  });
-
-  me.name = "Obaid";
-  ```
+  - `.toStream(observable, propAndOrEvent)`
+  - `.toStreamFromProperty(property)`
+  - `.toStreamFromEvent(property)`
+  - `.toCompute(makeStream(setStream), context):compute`
 
 @body
 
 ## Usage
 
-The [can-stream.toStream] method has shorthands for all of the other methods:
+The [can-stream] method has shorthands for all of the other methods:
 
 ```
 var canStream = require("can-stream");
 
-canStream.toStream(compute)                    //-> stream
-canStream.toStream(map, "eventName")           //-> stream
-canStream.toStream(map, ".propName")           //-> stream
-canStream.toStream(map, ".propName eventName") //-> stream
+var canStreaming = canStream(canStreamingInterface);
+
+canStreaming.toStream(compute)                    //-> stream
+canStreaming.toStream(map, "eventName")           //-> stream
+canStreaming.toStream(map, ".propName")           //-> stream
+canStreaming.toStream(map, ".propName eventName") //-> stream
 ```
 
 For example:
@@ -47,10 +37,13 @@ __Converting a compute to a stream__
 
 ```js
 var canCompute = require("can-compute");
+var canStreamKefir = require("can-stream-kefir");
 var canStream = require("can-stream");
 
+var canStreaming = canStream(canStreamKefir);
+
 var compute = canCompute(0);
-var stream = canStream.toStream(compute);
+var stream = canStreaming.toStream(compute);
 
 stream.onValue(function(newVal){
 	console.log(newVal);
@@ -64,11 +57,14 @@ __Converting an event to a stream__
 
 ```js
 var DefineList = require('can-define/list/list');
-var canStream = require('can-stream');
+var canStreamKefir = require("can-stream-kefir");
+var canStream = require("can-stream");
+
+var canStreaming = canStream(canStreamKefir);
 
 var hobbies = new DefineList(["js","kayaking"]);
 
-var changeCount = canStream.toStream(obs, "length").scan(function(prev){
+var changeCount = canStreaming.toStream(obs, "length").scan(function(prev){
 	return prev + 1;
 }, 0);
 changeCount.onValue(function(event) {
@@ -84,7 +80,10 @@ hobbies.shift()
 __Converting a property value to a stream__
 
 ```js
-var canStream = require('can-stream');
+var canStreamKefir = require("can-stream-kefir");
+var canStream = require("can-stream");
+
+var canStreaming = canStream(canStreamKefir);
 var DefineMap = require("can-define/map/map");
 
 var person = new DefineMap({
@@ -92,8 +91,8 @@ var person = new DefineMap({
 	last: "Meyer"
 });
 
-var first = canStream.toStream(person, '.first'),
-	last = canStream.toStream(person, '.last');
+var first = canStreaming.toStream(person, '.first'),
+	last = canStreaming.toStream(person, '.last');
 
 var fullName = Kefir.combine(first, last, function(first, last){
 	return first + last;
@@ -110,7 +109,10 @@ map.first = "Payal"
 __Converting an event on a nested object into a stream__
 
 ```js
-var canStream = require('can-stream');
+var canStreamKefir = require("can-stream-kefir");
+var canStream = require("can-stream");
+
+var canStreaming = canStream(canStreamKefir);
 var DefineMap = require("can-define/map/map");
 var DefineList = require("can-define/list/list");
 
@@ -118,7 +120,7 @@ var me = new DefineMap({
 	todos: ["mow lawn"]
 });
 
-var addStream = canStream.toStream(me, ".todos add");
+var addStream = canStreaming.toStream(me, ".todos add");
 
 addStream.onValue(function(event){
 	console.log(event);

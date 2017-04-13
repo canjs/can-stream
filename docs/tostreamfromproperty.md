@@ -1,5 +1,5 @@
-@function can-stream-kefir.toStreamFromProperty toStreamFromProperty
-@parent can-stream-kefir.fns
+@function can-stream.toStreamFromProperty toStreamFromProperty
+@parent can-stream.fns
 
 
 @description Creates a stream on a {Observable} object that gets updated whenever the property value on the observable changes.
@@ -12,7 +12,7 @@
   var map = {
       foo: "bar"
   };
-  var stream = canStream.toStreamFromProperty(map, 'foo');
+  var stream = canStreaming.toStreamFromProperty(map, 'foo');
 
   stream.onValue(function(value){
     console.log(value); // -> foobar
@@ -23,4 +23,4 @@
   @param {Observable} An observable object
   @param {String} property name
 
-  @return {Stream} A [Kefir](https://rpominov.github.io/kefir/) stream.
+  @return {Stream} A stream.
