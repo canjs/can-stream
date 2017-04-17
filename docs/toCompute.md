@@ -12,7 +12,7 @@ is called with:
  - its `this` as the `context`, and
  - `setStream` which is a stream of values set on the returned compute (ex: `compute(5)`).
 
-This is used to create computes from streams.  
+This is used to create computes from streams.
 
 ```js
 var count = Kefir.sequentially(1000, [1, 2]);

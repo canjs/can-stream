@@ -87,13 +87,11 @@ test('Stream on a property val - toStreamFromEvent', function(){
 	});
 
 	var canStreamInterface = {
-		toStream: function(observable, event) {
+		toStream: function(c) {
 			return {
 				onValue: function(callback) {
-					var ret = { target: {} };
-					ret.target[event] = observable[event];
-					observable.on(event, function(ev) {
-						callback(ev);
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
 					});
 				}
 			};
@@ -103,10 +101,10 @@ test('Stream on a property val - toStreamFromEvent', function(){
 	var canStreaming = canStream(canStreamInterface);
 
 	var map = new MyMap();
-	var stream = canStreaming.toStream(map, 'foo');
+	var stream = canStreaming.toStream(map, '.foo');
 
-	stream.onValue(function(ev){
-		QUnit.equal(ev.target.foo, expected);
+	stream.onValue(function(ev, newVal, oldVal){
+		QUnit.equal(newVal, expected);
 	});
 
 	expected = "foobar";
@@ -122,13 +120,11 @@ test('Stream on a property val - toStreamFromProperty', function(){
 	});
 
 	var canStreamInterface = {
-		toStream: function(observable, property) {
+		toStream: function(c) {
 			return {
 				onValue: function(callback) {
-					var ret = { target: {} };
-					ret.target[property] = observable[property];
-					observable.on(property, function(ev, value) {
-						callback(value);
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
 					});
 				}
 			};
@@ -138,73 +134,15 @@ test('Stream on a property val - toStreamFromProperty', function(){
 	var canStreaming = canStream(canStreamInterface);
 
 	var map = new MyMap();
-	var stream = canStreaming.toStream(map, 'foo');
+	var stream = canStreaming.toStream(map, '.foo');
 
-	stream.onValue(function(ev){
-		QUnit.equal(ev, expected);
+	stream.onValue(function(ev, val){
+		QUnit.equal(val, expected);
 	});
 
 
 	expected = "foobar";
 	map.foo = "foobar";
-
-});
-
-test('Multiple streams piped into single stream - toStreamFromProperty', function(){
-	var expected = "bar";
-
-	var map = new DefineMap({
-		foo: {
-			value: "bar"
-		},
-		foo2: {
-			value: "bar"
-		}
-	});
-
-	var canStreamInterface = {
-		toStream: function(observable, property) {
-			return {
-				onValue: function(callback) {
-					var ret = { target: {} };
-					ret.target[property] = observable[property];
-					observable.on(property, function(ev, value) {
-						callback(value);
-					});
-				}
-			};
-		},
-		toCompute: function(makeStream, context) {},
-		mergeStreams: function(s1, s2) {
-			var singleStream;
-			singleStream = {
-				onValue: function(callback) {
-					var changeHandler = function(value) {
-						callback(value);
-					};
-					s1.onValue(changeHandler);
-					s2.onValue(changeHandler);
-				}
-			};
-			return singleStream;
-		}
-	};
-	var canStreaming = canStream(canStreamInterface);
-
-	var stream1 = canStreaming.toStream(map, 'foo');
-	var stream2 = canStreaming.toStream(map, 'foo2');
-
-	var singleStream = canStreaming.mergeStreams(stream1, stream2);
-
-	singleStream.onValue(function(ev){
-		QUnit.equal(ev, expected);
-	});
-
-	expected = "foobar";
-	map.foo = "foobar";
-
-	expected = "foobar2";
-	map.foo2 = "foobar2";
 
 });
 
@@ -219,23 +157,21 @@ test('Event streams fire change events', function () {
 	});
 
 	var canStreamInterface = {
-		toStream: function(observable, event) {
+		toStream: function(c) {
 			return {
 				onValue: function(callback) {
-					var ret = { target: {} };
-					ret.target[event] = observable[event];
-					observable.on(event, function(ev) {
-						callback(ev);
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
 					});
 				}
 			};
 		},
 		toCompute: function(makeStream, context) {},
-		mergeStreams: function(s1, s2) {}
 	};
 	var canStreaming = canStream(canStreamInterface);
 
 	var map = new MyMap();
+
 
 	var stream = canStreaming.toStream(map.fooList, 'length');
 
@@ -248,5 +184,424 @@ test('Event streams fire change events', function () {
 
 	expected = 0;
 	map.fooList.pop();
+
+});
+
+test('Event streams fire change event on a property', function () {
+
+
+	var expected = 0;
+	var MyMap = DefineMap.extend({
+		fooList: {
+			Type: DefineList.List,
+			value: []
+		}
+	});
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var map = new MyMap();
+
+	var stream = canStreaming.toStream(map, '.fooList add');
+
+
+	stream.onValue(function(ev){
+		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	});
+
+	expected = 1;
+	map.fooList.push(1);
+
+
+	expected = 0;
+	map.fooList.pop();
+
+});
+
+
+//old
+test('Stream on a property val - toStreamFromEvent', function(){
+	var expected = "bar";
+	var MyMap = DefineMap.extend({
+		foo: "bar"
+	});
+	var map = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(map, 'foo');
+
+	stream.onValue(function(ev, val){
+		QUnit.equal(val, expected);
+	});
+
+	expected = "foobar";
+	map.foo = "foobar";
+});
+
+
+
+test('Event streams fire change events', function () {
+	var expected = 0;
+	var MyMap = DefineMap.extend({
+		fooList: {
+			Type: DefineList.List,
+			value: []
+		}
+	});
+	var map = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(map.fooList, 'length');
+
+	stream.onValue(function(ev){
+		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	});
+
+	expected = 1;
+	map.fooList.push(1);
+
+	expected = 0;
+	map.fooList.pop();
+
+});
+
+test('Convert an observable nested property into an event stream #2b', function() {
+	var expected = 1;
+	var MyMap = DefineMap.extend({
+		foo: {
+			value: {
+				bar: {
+					value: 1
+				}
+			}
+		}
+	});
+	var obs = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(obs.foo, "bar");
+
+	stream.onValue(function(ev, val) {
+		QUnit.equal(expected, val);
+	});
+
+	expected = 2;
+	obs.foo.bar = 2;
+
+});
+
+test('Event streams fire change events on a property', function () {
+	var expected = 0;
+	var MyMap = DefineMap.extend({
+		fooList: {
+			Type: DefineList.List,
+			value: []
+		}
+	});
+	var map = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(map, '.fooList length');
+
+	stream.onValue(function(ev){
+		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	});
+
+	expected = 1;
+	map.fooList.push(1);
+
+	expected = 0;
+	map.fooList.pop();
+
+});
+
+
+
+// test('Create a stream from a observable and nested property with shorthand method: toStream', function() {
+
+// 	var expected = 1;
+// 	var MyMap = DefineMap.extend({
+// 		foo: {
+// 			type: '*',
+// 			value: {
+// 				bar: 1
+// 			}
+// 		}
+// 	});
+// 	var obs = new MyMap();
+// 	var canStreamInterface = {
+// 		toStream: function(c) {
+// 			return {
+// 				onValue: function(callback) {
+// 					c.on('change', function() {
+// 						callback.apply(null, Array.from(arguments));
+// 					});
+// 				}
+// 			};
+// 		},
+// 		toCompute: function(makeStream, context) {},
+// 	};
+// 	var canStreaming = canStream(canStreamInterface);
+
+
+// 	var stream = canStreaming.toStream(obs, "foo.bar");
+
+// 	stream.onValue(function(newVal) {
+// 		QUnit.equal(expected, newVal);
+// 	});
+
+// 	expected = 2;
+// 	obs.foo.bar = 2;
+
+// });
+
+
+
+
+test('Create a stream from a observable and event with shorthand method: toStream', function() {
+	var expected = 0;
+	var MyMap = DefineMap.extend({
+		fooList: {
+			Type: DefineList.List,
+			value: []
+		}
+	});
+	var map = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+
+	var stream = canStreaming.toStream(map.fooList, 'length');
+
+	stream.onValue(function(ev){
+		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	});
+
+	expected = 1;
+	map.fooList.push(1);
+
+	expected = 0;
+	map.fooList.pop();
+});
+
+
+test('Create a stream from a observable and event on property with shorthand method: toStream', function() {
+	var expected = 0;
+	var MyMap = DefineMap.extend({
+		fooList: {
+			Type: DefineList.List,
+			value: []
+		}
+	});
+	var map = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(map, '.fooList length');
+
+	stream.onValue(function(ev){
+		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	});
+
+	expected = 1;
+	map.fooList.push(1);
+
+	expected = 0;
+	map.fooList.pop();
+});
+
+
+test('Update the list to undefined', function() {
+	var expected = 0;
+	var MyMap = DefineMap.extend({
+		fooList: {
+			Type: DefineList.List,
+			value: []
+		}
+	});
+	var map = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(map, '.fooList.length');
+
+	stream.onValue(function(ev, newVal){
+		QUnit.equal(newVal, expected, 'Setting fooList to null');
+	});
+
+	expected = undefined;
+	map.fooList = null;
+});
+
+test('Update the list to a new DefineList instance', function() {
+	var expected = 0;
+	var MyMap = DefineMap.extend({
+		fooList: {
+			Type: DefineList.List,
+			value: []
+		}
+	});
+	var map = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+
+	var stream = canStreaming.toStream(map, 'fooList');
+
+	stream.onValue(function(ev, newVal){
+		QUnit.equal(newVal.length, expected, 'Setting fooList to null');
+	});
+
+	expected = 0;
+	map.fooList = new DefineList([]);
+
+});
+
+test('Pass args back to event object when dispatch is called', function() {
+	var expected;
+
+	var MyMap = DefineMap.extend({
+		foo: {
+			type: 'string',
+			value: 'bar'
+		}
+	});
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			return {
+				onValue: function(callback) {
+					c.on('change', function() {
+						callback.apply(null, Array.from(arguments));
+					});
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+
+	var obs = new MyMap();
+	var stream1 = canStreaming.toStream(obs, 'foo');
+
+	stream1.onValue(function(ev, val){
+		QUnit.equal(expected, val);
+	});
+
+	expected = 'myarg';
+	obs.dispatch('foo', ['myarg', 'myargs']);
 
 });
