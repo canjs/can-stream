@@ -70,11 +70,11 @@ test('Compute streams do not bind to the compute unless activated', function () 
 	var canStreaming = canStream(canStreamInterface);
 	var stream = canStreaming.toStream(c);
 
-	QUnit.equal(c.computeInstance._bindings, undefined);
+	QUnit.equal(c.computeInstance.__bindEvents, undefined);
 
 	stream.onValue(function () {});
 
-	QUnit.equal(c.computeInstance._bindings, 1);
+	QUnit.equal(c.computeInstance.__bindEvents._lifecycleBindings, 1);
 });
 
 
