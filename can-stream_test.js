@@ -175,8 +175,8 @@ test('Event streams fire change events', function () {
 
 	var stream = canStreaming.toStream(map.fooList, 'length');
 
-	stream.onValue(function(ev){
-		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	stream.onValue(function(ev, val){
+		QUnit.equal(val, expected, 'Event stream was updated with length: ' + map.fooList.length);
 	});
 
 	expected = 1;
@@ -217,8 +217,8 @@ test('Event streams fire change event on a property', function () {
 	var stream = canStreaming.toStream(map, '.fooList add');
 
 
-	stream.onValue(function(ev){
-		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	stream.onValue(function(ev, length, oldLength){
+		QUnit.equal(length, expected, 'Event stream was updated with length: ' + map.fooList.length);
 	});
 
 	expected = 1;
@@ -291,8 +291,8 @@ test('Event streams fire change events', function () {
 
 	var stream = canStreaming.toStream(map.fooList, 'length');
 
-	stream.onValue(function(ev){
-		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	stream.onValue(function(ev, length){
+		QUnit.equal(length, expected, 'Event stream was updated with length: ' + map.fooList.length);
 	});
 
 	expected = 1;
@@ -353,11 +353,16 @@ test('Event streams fire change events on a property', function () {
 
 	var canStreamInterface = {
 		toStream: function(c) {
+			var handler;
 			return {
 				onValue: function(callback) {
-					c.on('change', function() {
+					handler = function() {
 						callback.apply(null, Array.from(arguments));
-					});
+					};
+					c.on('change', handler);
+				},
+				offValue: function(callback) {
+					c.off('change', handler);
 				}
 			};
 		},
@@ -367,15 +372,22 @@ test('Event streams fire change events on a property', function () {
 
 	var stream = canStreaming.toStream(map, '.fooList length');
 
-	stream.onValue(function(ev){
-		QUnit.equal(map.fooList.length, expected, 'Event stream was updated with length: ' + map.fooList.length);
-	});
+	var handler = function(ev, length, lastLength){
+		QUnit.equal(length, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	};
+	stream.onValue(handler);
 
 	expected = 1;
 	map.fooList.push(1);
+	expected = 2;
+	map.fooList.push(2);
+	expected = 1;
+	map.fooList.pop();
 
 	expected = 0;
-	map.fooList.pop();
+	map.fooList = new DefineList([]);
+
+	stream.offValue(handler);
 
 });
 
@@ -407,8 +419,7 @@ test('Event streams fire change events on a property', function () {
 // 	};
 // 	var canStreaming = canStream(canStreamInterface);
 
-
-// 	var stream = canStreaming.toStream(obs, "foo.bar");
+// 	var stream = canStreaming.toStream(obs, ".foo.bar");
 
 // 	stream.onValue(function(newVal) {
 // 		QUnit.equal(expected, newVal);

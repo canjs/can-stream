@@ -19,17 +19,17 @@ module.exports = namespace.stream = function(canStreamInterface) {
 
 			eventName = arguments[1];
 			lastValue = obs[eventName];
-
-
+			var handler;
 			internalCompute = compute(undefined, {
 				on: function(updated) {
-					obs.on(eventName, function(ev, val) {
+					handler = function(ev, val) {
 						lastValue = val;
 						updated(lastValue);
-					});
+					};
+					obs.on(eventName, handler);
 				},
-				off: function() {
-					obs.off(eventName);
+				off: function(updated) {
+					obs.off(eventName, handler);
 				},
 				set: function(val) {
 					lastValue = val;
@@ -46,15 +46,34 @@ module.exports = namespace.stream = function(canStreamInterface) {
 			eventName = arguments[2];
 			lastValue = obs[propName];
 
+			var valuePropCompute = compute(obs, propName);
+
+			var eventHandler;
+			var propChangeHandler;
+
 			internalCompute = compute(undefined,{
 				on: function(updater){
-					obs[propName].on(eventName, function(ev, newVal) {
+					eventHandler = function(ev, newVal, oldVal) {
 						lastValue = newVal;
 						updater(lastValue);
-					});
+					};
+
+					propChangeHandler = function(ev, newVal, oldVal) {
+						oldVal.off('change', eventHandler);
+						valuePropCompute.off('change', propChangeHandler);
+						valuePropCompute = compute(obs, propName);
+						valuePropCompute.on('change', propChangeHandler);
+						newVal.on(eventName, eventHandler);
+						lastValue = newVal[eventName];
+						updater(lastValue);
+					};
+
+					valuePropCompute.on('change', propChangeHandler);
+					obs[propName].on(eventName, eventHandler);
 				},
 				off: function(){
-					// obs[propName].off(eventName);
+					valuePropCompute.off('change', propChangeHandler);
+					obs[propName].off(eventName, eventHandler);
 				},
 				get: function(){
 					return lastValue;
@@ -63,7 +82,10 @@ module.exports = namespace.stream = function(canStreamInterface) {
 					lastValue = val;
 				}
 			});
-			return canStreamInterface.toStream(internalCompute);
+
+			var stream = canStreamInterface.toStream(internalCompute);
+
+			return stream;
 		}
 	};
 
