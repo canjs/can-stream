@@ -1,5 +1,5 @@
-@function can-stream-kefir.toCompute toCompute
-@parent can-stream-kefir.fns
+@function can-stream.toCompute toCompute
+@parent can-stream.fns
 
 @description Creates a [can-compute.computed] from a stream generator function.
 

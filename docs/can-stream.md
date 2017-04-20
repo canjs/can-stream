@@ -3,16 +3,18 @@
 @group can-stream.fns 4 Methods
 @package ../package.json
 
-@description Exports a function that takes a can-stream interface (like [can-stream-kefir(https://github.com/canjs/can-stream-kefir)) and uses it internally to provide the stream functionality.
+@description Exports a function that takes a can-stream interface (like [can-stream-kefir](https://github.com/canjs/can-stream-kefir)) and uses it internally to provide the stream functionality.
 
 @type {Object}
 
-  The `can-stream` module exports methods Exports a function that takes a can-stream interface and returns an object with the following methods:
+  The `can-stream` module exports a function that takes a can-stream interface and returns an object with the following methods:
 
 - `.toStream(observable, propAndOrEvent[,event])`
 - `.toStreamFromProperty(property)`
 - `.toStreamFromEvent(property)`
 - `.toCompute(makeStream(setStream), context):compute`
+
+
 @body
 
 ## Usage

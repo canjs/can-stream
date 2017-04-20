@@ -1,5 +1,5 @@
-@function can-stream-kefir.toStream toStream
-@parent can-stream-kefir.fns
+@function can-stream.toStream toStream
+@parent can-stream.fns
 
 
 @description Provides a shorthand for creating a stream from observable objects, properties and
@@ -28,12 +28,12 @@ events.
 
   @param {can-compute} compute A compute whose value will be the stream values.
 
-  @return {Stream} A [Kefir](https://rpominov.github.io/kefir/) stream.
+  @return {Stream} A stream object.
 
-@signature  `canStream.toStream( obs, "eventName" )`
+@signature  `canStream.toStream( observable, "eventName" )`
 
   Creates an event stream with the event objects dispatched on `obs` for `eventName`.
-  This is a shorthand for [can-stream-kefir.toStreamFromEvent].
+  This is a shorthand for [can-stream.toStreamFromEvent].
 
   ```js
   var DefineList = require('can-define/list/list');
@@ -56,14 +56,14 @@ events.
   //-> console.logs {type: "remove", args: [0,["js"]]}
   ```
 
-  @param {Observable} obs An observable object like a [can-define/map/map].
+  @param {Observable} observable An observable object like a [can-define/map/map].
   Promises can work too.
   @param {String} eventName An observable event name.
 
   @return {String} A stream make up of the event objects dispatched on `obs`.
 
 
-@signature `canStream.toStream( obs, ".propName" )`
+@signature `canStream.toStream( observable, ".propName" )`
 
   Creates a stream from an observable property value. This is a shorthand for [can-stream.toStreamFromProperty].
 
@@ -104,7 +104,7 @@ events.
 
 @signature `canStream.toStream( obs, ".propName eventName" )`
 
-  Creates a stream from an observable property value. This is a shorthand for the second signature of [can-stream-kefir.toStreamFromEvent].
+  Creates a stream from an observable property value. This is a shorthand for the second signature of [can-stream.toStreamFromEvent].
 
   ```js
   var canStreamKefir = require('can-stream-kefir');
