@@ -234,7 +234,6 @@ test('Event streams fire change event on a property', function () {
 
 //old
 test('Stream on a property val - toStreamFromEvent', function(){
-	var expected = "bar";
 	var MyMap = DefineMap.extend({
 		foo: {value: "bar"}
 	});
