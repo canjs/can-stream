@@ -91,7 +91,7 @@ test('Stream on a property val - toStreamFromEvent', function(){
 			return {
 				onValue: function(callback) {
 					c.on('change', function() {
-						callback.apply(null, Array.from(arguments));
+						callback.apply(null, arguments);
 					});
 				}
 			};
@@ -124,7 +124,7 @@ test('Stream on a property val - toStreamFromProperty', function(){
 			return {
 				onValue: function(callback) {
 					c.on('change', function() {
-						callback.apply(null, Array.from(arguments));
+						callback.apply(null, arguments);
 					});
 				}
 			};
@@ -204,7 +204,7 @@ test('Event streams fire change event on a property', function () {
 			return {
 				onValue: function(callback) {
 					c.on('change', function() {
-						callback.apply(null, Array.from(arguments));
+						callback.apply(null, arguments);
 					});
 				}
 			};
@@ -321,7 +321,7 @@ test('Event streams fire change events on a property', function () {
 			return {
 				onValue: function(callback) {
 					handler = function() {
-						callback.apply(null, Array.from(arguments));
+						callback.apply(null, arguments);
 					};
 					c.on('change', handler);
 				},
@@ -374,7 +374,7 @@ test('Event streams fire change events on a property', function () {
 // 			return {
 // 				onValue: function(callback) {
 // 					c.on('change', function() {
-// 						callback.apply(null, Array.from(arguments));
+// 						callback.apply(null, arguments);
 // 					});
 // 				}
 // 			};
@@ -412,7 +412,7 @@ test('Create a stream from a observable and event with shorthand method: toStrea
 			return {
 				onValue: function(callback) {
 					c.on('change', function() {
-						callback.apply(null, Array.from(arguments));
+						callback.apply(null, arguments);
 					});
 				}
 			};
@@ -451,7 +451,7 @@ test('Create a stream from a observable and event on property with shorthand met
 			return {
 				onValue: function(callback) {
 					c.on('change', function() {
-						callback.apply(null, Array.from(arguments));
+						callback.apply(null, arguments);
 					});
 				}
 			};
@@ -489,7 +489,7 @@ test('Update the list to undefined', function() {
 			return {
 				onValue: function(callback) {
 					c.on('change', function() {
-						callback.apply(null, Array.from(arguments));
+						callback.apply(null, arguments);
 					});
 				}
 			};
