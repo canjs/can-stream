@@ -1,8 +1,33 @@
 var namespace = require('can-util/namespace');
 var compute = require('can-compute');
 var makeArray = require('can-util/js/make-array/make-array');
+var assign = require("can-util/js/assign/assign");
 
-module.exports = namespace.stream = function(canStreamInterface) {
+var toComputeFromEvent = function(observable, eventName){
+	var handler,
+		lastSet;
+	return compute(undefined, {
+		on: function(updated) {
+			handler = function(ev, val) {
+				lastSet = assign({
+					args: [].slice.call(arguments, 1)
+				},ev);
+				updated();
+			};
+			observable.on(eventName, handler);
+		},
+		off: function(updated) {
+			observable.off(eventName, handler);
+			lastSet = undefined;
+		},
+		get: function(){
+			return lastSet;
+		}
+	});
+};
+
+
+var STREAM = function(canStreamInterface) {
 	var canStream = {};
 
 	canStream.toStreamFromProperty = function(obs, propName) {
@@ -17,27 +42,7 @@ module.exports = namespace.stream = function(canStreamInterface) {
 		if(arguments.length === 2) {
 			//.toStreamFromEvent(obs, event);
 
-			eventName = arguments[1];
-			lastValue = obs[eventName];
-			var handler;
-			internalCompute = compute(undefined, {
-				on: function(updated) {
-					handler = function(ev, val) {
-						lastValue = val;
-						updated(lastValue);
-					};
-					obs.on(eventName, handler);
-				},
-				off: function(updated) {
-					obs.off(eventName, handler);
-				},
-				set: function(val) {
-					lastValue = val;
-				},
-				get: function() {
-					return lastValue;
-				}
-			});
+			internalCompute = toComputeFromEvent(obs,  arguments[1]);
 
 			return canStreamInterface.toStream(internalCompute);
 		} else {
@@ -121,3 +126,7 @@ module.exports = namespace.stream = function(canStreamInterface) {
 
 	return canStream;
 };
+STREAM.toComputeFromEvent = toComputeFromEvent;
+
+
+module.exports = namespace.stream = STREAM;
