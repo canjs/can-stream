@@ -59,27 +59,23 @@ module.exports = namespace.stream = function(canStreamInterface) {
 					};
 
 					propChangeHandler = function(ev, newVal, oldVal) {
-						oldVal.off('change', eventHandler);
-						valuePropCompute.off('change', propChangeHandler);
-						valuePropCompute = compute(obs, propName);
-						valuePropCompute.on('change', propChangeHandler);
+						oldVal.off(eventName, eventHandler);
 						newVal.on(eventName, eventHandler);
-						lastValue = newVal[eventName];
-						updater(lastValue);
 					};
 
 					valuePropCompute.on('change', propChangeHandler);
-					obs[propName].on(eventName, eventHandler);
+
+					valuePropCompute().on(eventName, eventHandler);
 				},
 				off: function(){
+					valuePropCompute().off(eventName, eventHandler);
 					valuePropCompute.off('change', propChangeHandler);
-					obs[propName].off(eventName, eventHandler);
 				},
 				get: function(){
 					return lastValue;
 				},
 				set: function(val){
-					lastValue = val;
+					throw new Error("can-stream: you can't set this type of compute");
 				}
 			});
 
