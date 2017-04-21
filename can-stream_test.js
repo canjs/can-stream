@@ -305,6 +305,50 @@ test('Convert an observable nested property into an event stream #2b', 2, functi
 
 });
 
+test('observable nested property event', 1, function() {
+
+	var MyMap = DefineMap.extend({
+		foo: {
+			value: function(){
+				return {
+					bar: 1
+				};
+			}
+		}
+	});
+	var obs = new MyMap();
+
+	var canStreamInterface = {
+		toStream: function(c) {
+			var handler;
+			return {
+				onValue: function(callback) {
+					handler = function() {
+						callback.apply(null, arguments);
+					};
+					c.on('change', handler);
+				},
+				offValue: function(callback) {
+					c.off('change', handler);
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {},
+	};
+	var canStreaming = canStream(canStreamInterface);
+
+	var stream = canStreaming.toStream(obs, ".foo bar");
+
+	var expected = 1;
+	stream.onValue(function(barEvent, barValue) {
+		QUnit.equal(barValue, expected, "value was " + barValue);
+	});
+
+	expected = 2;
+	obs.foo.bar = 2;
+
+});
+
 test('Event streams fire change events on a property', function () {
 	var expected = 0;
 	var MyMap = DefineMap.extend({
