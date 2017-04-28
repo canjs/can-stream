@@ -1,7 +1,7 @@
-@function can-stream.toCompute toCompute
-@parent can-stream.fns
+@function can-stream/type/interface.toCompute toCompute
+@parent can-stream.types.streamInterface
 
-@description Creates a [can-compute.computed] from a stream generator function.
+@description Create a [can-compute.computed] from a stream generator function.
 
 @signature `canStream.toCompute( makeStream(setStream), [context] )`
 

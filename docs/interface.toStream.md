@@ -1,6 +1,5 @@
-@function can-stream.toStream toStream
-@parent can-stream.fns
-
+@function can-stream/type/interface.toStream toStream
+@parent can-stream.types.streamInterface
 
 @description Provides a shorthand for creating a stream from observable objects, properties and
 events.

@@ -1,6 +1,5 @@
-@function can-stream.toStreamFromEvent toStreamFromEvent
-@parent can-stream.fns
-
+@function can-stream/type/interface.toStreamFromEvent toStreamFromEvent
+@parent can-stream.types.streamInterface
 
 @description Creates a stream on a {Observable} object that gets updated whenever the event occurs on the observable object.
 

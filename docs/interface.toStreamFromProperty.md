@@ -1,6 +1,5 @@
-@function can-stream.toStreamFromProperty toStreamFromProperty
-@parent can-stream.fns
-
+@function can-stream/type/interface.toStreamFromProperty toStreamFromProperty
+@parent can-stream.types.streamInterface
 
 @description Creates a stream on a {Observable} object that gets updated whenever the property value on the observable changes.
 
