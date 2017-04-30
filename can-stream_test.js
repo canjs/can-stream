@@ -6,12 +6,36 @@ var canStream = require('can-stream');
 
 QUnit.module('can-stream');
 
+test('Resolves to "toStream" function', function() {
+	var c = compute(0);
+	var obj;
+	var streamInterface;
+
+	var streamImplementation = {
+		toStream: function(observable, propOrEvent) {
+			QUnit.equal(c, observable);
+			return obj = {
+				onValue: function(callback) {
+					c.on('change', function(evnt, newVal, oldVal) {
+						callback(newVal);
+					});
+					callback(c()); //initial value;
+				}
+			};
+		},
+		toCompute: function(makeStream, context) {}
+	};
+	streamInterface = canStream(streamImplementation);
+
+	var stream = streamInterface(c);
+	QUnit.equal(obj, stream);
+
+});
+
 test('Compute changes can be streamed', function () {
 	var c = compute(0);
 	var obj;
 	var canStreaming;
-
-
 
 	var canStreamInterface = {
 		toStream: function(observable, propOrEvent) {
@@ -140,7 +164,6 @@ test('Stream on a property val - toStreamFromProperty', function(){
 		QUnit.equal(val, expected);
 	});
 
-
 	expected = "foobar";
 	map.foo = "foobar";
 
@@ -171,7 +194,6 @@ test('Event streams fire change events', function () {
 	var canStreaming = canStream(canStreamInterface);
 
 	var map = new MyMap();
-
 
 	var stream = canStreaming.toStream(map.fooList, 'length');
 
@@ -399,8 +421,6 @@ test('Event streams fire change events on a property', function () {
 
 });
 
-
-
 // test('Create a stream from a observable and nested property with shorthand method: toStream', function() {
 
 // 	var expected = 1;
@@ -437,9 +457,6 @@ test('Event streams fire change events on a property', function () {
 // 	obs.foo.bar = 2;
 
 // });
-
-
-
 
 test('Create a stream from a observable and event with shorthand method: toStream', function() {
 	var expected = 0;
@@ -551,8 +568,6 @@ test('Update the list to undefined', function() {
 	expected = undefined;
 	map.fooList = null;
 });
-
-
 
 test("toStreamFromEvent passes event and other arguments", 3, function(){
 	// test by testing toComputeFromEvent first
