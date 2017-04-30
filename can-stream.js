@@ -29,7 +29,7 @@ var toComputeFromEvent = function(observable, eventName){
 
 var STREAM = function(canStreamInterface) {
 
-	var canStream = function() {};
+	var canStream;
 
 	var toStreamFromProperty = function(obs, propName) {
 		return canStreamInterface.toStream(compute(obs, propName));
