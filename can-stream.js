@@ -28,13 +28,14 @@ var toComputeFromEvent = function(observable, eventName){
 
 
 var STREAM = function(canStreamInterface) {
-	var canStream = {};
 
-	canStream.toStreamFromProperty = function(obs, propName) {
+	var canStream;
+
+	var toStreamFromProperty = function(obs, propName) {
 		return canStreamInterface.toStream(compute(obs, propName));
 	};
 
-	canStream.toStreamFromEvent = function() {
+	var toStreamFromEvent = function() {
 		var obs = arguments[0];
 		var eventName, propName, lastValue, internalCompute;
 
@@ -91,7 +92,7 @@ var STREAM = function(canStreamInterface) {
 	};
 
 	//.toStream(observable, propAndOrEvent[,event])
-	canStream.toStream = function() {
+	var toStream = function() {
 
 		if(arguments.length === 1) {
 			//we expect it to be a compute:
@@ -119,14 +120,19 @@ var STREAM = function(canStreamInterface) {
 		return undefined;
 	};
 
-	canStream.toCompute = function(makeStream, context) {
+	var toCompute = function(makeStream, context) {
 		var args = makeArray(arguments);
 		return canStreamInterface.toCompute.apply(this, args);
 	};
 
+	canStream = toStream;
+	canStream.toStream = canStream;
+	canStream.toStreamFromProperty = toStreamFromProperty;
+	canStream.toStreamFromEvent = toStreamFromEvent;
+	canStream.toCompute = toCompute;
+
 	return canStream;
 };
 STREAM.toComputeFromEvent = toComputeFromEvent;
-
 
 module.exports = namespace.stream = STREAM;
