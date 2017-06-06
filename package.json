@@ -11,7 +11,7 @@
   "scripts": {
     "preversion": "npm test && npm run build",
     "version": "git commit -am \"Update dist for release\" && git checkout -b release && git add -f dist/",
-    "postversion": "git push --tags && git checkout master && git branch -D release && git push",
+    "postversion": "git push --tags && git checkout can-reflect && git branch -D release && git push",
     "testee": "testee test.html --browsers firefox",
     "test": "npm run jshint && npm run testee",
     "jshint": "jshint *.js --config",
@@ -35,10 +35,10 @@
     ]
   },
   "dependencies": {
-    "can-compute": "^3.0.0",
-    "can-define": "^1.0.0",
+    "can-compute": "^3.1.0-pre.9",
+    "can-define": "^1.2.0-pre.4",
     "can-event": "^3.0.0",
-    "can-observation": "^3.0.0",
+    "can-observation": "^3.2.0-pre.11",
     "can-types": "^1.0.4",
     "can-util": "^3.0.0",
     "kefir": "^3.5.1"
