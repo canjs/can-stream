@@ -36,9 +36,9 @@
   },
   "dependencies": {
     "can-compute": "^3.2.0",
+    "can-define": "^1.2.0",
     "can-event": "^3.5.0",
     "can-observation": "^3.2.0",
-    "can-define": "^1.2.3",
     "can-types": "^1.1.0",
     "can-util": "^3.9.0",
     "kefir": "^3.7.2"
@@ -53,7 +53,7 @@
     "steal-qunit": "^1.0.1",
     "steal-tools": "^1.1.2",
     "testee": "^0.6.1"
-},
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/canjs/can-stream.git"
