@@ -41,7 +41,7 @@
     "can-observation": "^3.2.0",
     "can-types": "^1.1.0",
     "can-util": "^3.9.0",
-    "kefir": "^3.7.2"
+    "kefir": "^3.5.1"
   },
   "devDependencies": {
     "bit-docs": "0.0.7",
