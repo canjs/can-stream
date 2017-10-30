@@ -1,5 +1,6 @@
 @module {function} can-stream can-stream
-@parent can-ecosystem
+@parent can-observables
+@collection can-ecosystem
 @group can-stream.types types
 @package ../package.json
 
