@@ -35,7 +35,8 @@
     ]
   },
   "dependencies": {
-    "can-compute": "canjs/can-compute#can-cid",
+    "can-assign": "^1.1.1",
+    "can-compute": "^4.0.0-pre.8",
     "can-define": "^2.0.0-pre.21",
     "can-namespace": "^1.0.0",
     "can-observation": "^4.0.0-pre.24",

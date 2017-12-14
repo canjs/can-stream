@@ -1,3 +1,4 @@
+var assign = require("can-assign");
 var compute = require("can-compute");
 var canReflect = require("can-reflect");
 var namespace = require("can-namespace");
@@ -8,9 +9,9 @@ var toComputeFromEvent = function(observable, eventName){
 	return compute(undefined, {
 		on: function(updated) {
 			handler = function(ev, val) {
-				lastSet = canReflect.assign({
+				lastSet = assign({
 					args: [].slice.call(arguments, 1)
-				},ev);
+				}, ev);
 				updated();
 			};
 			observable.on(eventName, handler);
@@ -120,7 +121,7 @@ var STREAM = function(canStreamInterface) {
 	};
 
 	var toCompute = function(makeStream, context) {
-		var args = Array.from(arguments);
+		var args = canReflect.toArray(arguments);
 		return canStreamInterface.toCompute.apply(this, args);
 	};
 
