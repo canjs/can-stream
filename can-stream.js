@@ -1,7 +1,7 @@
-var namespace = require('can-util/namespace');
-var compute = require('can-compute');
-var makeArray = require('can-util/js/make-array/make-array');
-var assign = require("can-util/js/assign/assign");
+var assign = require("can-assign");
+var compute = require("can-compute");
+var canReflect = require("can-reflect");
+var namespace = require("can-namespace");
 
 var toComputeFromEvent = function(observable, eventName){
 	var handler,
@@ -11,7 +11,7 @@ var toComputeFromEvent = function(observable, eventName){
 			handler = function(ev, val) {
 				lastSet = assign({
 					args: [].slice.call(arguments, 1)
-				},ev);
+				}, ev);
 				updated();
 			};
 			observable.on(eventName, handler);
@@ -121,7 +121,7 @@ var STREAM = function(canStreamInterface) {
 	};
 
 	var toCompute = function(makeStream, context) {
-		var args = makeArray(arguments);
+		var args = canReflect.toArray(arguments);
 		return canStreamInterface.toCompute.apply(this, args);
 	};
 

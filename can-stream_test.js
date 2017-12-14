@@ -74,13 +74,13 @@ test('Compute changes can be streamed', function () {
 	QUnit.equal(computeVal, 3);
 });
 
-test('Compute streams do not bind to the compute unless activated', function () {
+QUnit.test('Compute streams do not bind to the compute unless activated', function(assert) {
 	var c = compute(0);
+
 	var canStreamInterface = {
 		toStream: function(observable, propOrEvent) {
-			QUnit.equal(c, observable);
-			var obj;
-			return obj = {
+			assert.equal(c, observable);
+			return {
 				onValue: function(callback) {
 					c.on('change', function(evnt, newVal, oldVal) {
 						callback(newVal);
@@ -91,16 +91,15 @@ test('Compute streams do not bind to the compute unless activated', function () 
 		},
 		toCompute: function(makeStream, context) {}
 	};
+
 	var canStreaming = canStream(canStreamInterface);
 	var stream = canStreaming.toStream(c);
 
-	QUnit.equal(c.computeInstance.__bindEvents, undefined);
+	assert.notOk(c.computeInstance.bound, "should not be bound");
 
-	stream.onValue(function () {});
-
-	QUnit.equal(c.computeInstance.__bindEvents._lifecycleBindings, 1);
+	stream.onValue(function() {});
+	assert.ok(c.computeInstance.bound, "should be bound");
 });
-
 
 test('Stream on a property val - toStreamFromEvent', function(){
 	var expected = "bar";
@@ -169,8 +168,7 @@ test('Stream on a property val - toStreamFromProperty', function(){
 
 });
 
-
-test('Event streams fire change events', function () {
+QUnit.test('Event streams fire change events', function(assert) {
 	var expected = 0;
 	var MyMap = DefineMap.extend({
 		fooList: {
@@ -194,20 +192,22 @@ test('Event streams fire change events', function () {
 	var canStreaming = canStream(canStreamInterface);
 
 	var map = new MyMap();
-
 	var stream = canStreaming.toStream(map.fooList, 'length');
 
-	stream.onValue(function(lengthEvent){
-		QUnit.equal(lengthEvent.type, "length");
-		QUnit.deepEqual(lengthEvent.args, expected, 'Event stream was updated with length: ' + map.fooList.length);
+	stream.onValue(function(lengthEvent) {
+		assert.equal(lengthEvent.type, "length");
+		assert.deepEqual(
+			lengthEvent.args,
+			expected,
+			'Event stream was updated with length: ' + map.fooList.length
+		);
 	});
 
-	expected = [1];
+	expected = [1, 0];  // [newValue, oldValue]
 	map.fooList.push(1);
 
-	expected = [0];
+	expected = [0, 1]; // [newValue, oldValue]
 	map.fooList.pop();
-
 });
 
 test('Event streams fire change event on a property', function () {
