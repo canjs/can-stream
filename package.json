@@ -1,6 +1,6 @@
 {
   "name": "can-stream",
-  "version": "0.3.2",
+  "version": "1.0.0-pre.0",
   "description": "Stream values into and out of computes",
   "homepage": "http://canjs.com",
   "author": {
@@ -35,13 +35,14 @@
     ]
   },
   "dependencies": {
-    "can-compute": "^3.2.0",
-    "can-define": "^1.2.0",
-    "can-event": "^3.5.0",
-    "can-observation": "^3.2.0",
+    "can-assign": "^1.1.1",
+    "can-compute": "^4.0.0",
+    "can-define": "^2.0.0",
+    "can-namespace": "^1.0.0",
+    "can-observation": "^4.0.0",
+    "can-reflect": "^1.11.0",
     "can-types": "^1.1.0",
-    "can-util": "^3.9.0",
-    "kefir": "^3.5.1"
+    "kefir": "^3.8.0"
   },
   "devDependencies": {
     "bit-docs": "0.0.7",
