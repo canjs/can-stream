@@ -5,12 +5,12 @@
 
 @signature `makeStream(setStream)`
 
-```javascript
+```js
 import Kefir from 'kefir';
 const count = Kefir.sequentially(1000, [1, 2]);
 
 const myCompute = canStream.toCompute(function(setStream) {
-  return setStream.merge(count);
+	return setStream.merge(count);
 });
 ```
 

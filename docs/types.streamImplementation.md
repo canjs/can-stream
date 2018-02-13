@@ -6,19 +6,19 @@
 @type {Object}
   An object with `toStream` and `toCompute` methods.
 
-```javascript
+```js
 const streamImplementation = {
-  toStream: function(compute){
-    return MAKE_THE_STREAM_FROM_A_COMPUTE(compute);
-  },
-  toCompute: function(makeStream, context){
-    const setStream = MAKE_A_SETTABLE_STREAM_THAT_IS_SET_WHEN_COMPUTE_IS_SET();
-    const stream = makeStream.call(context, setStream);
+	toStream: function(compute){
+		return MAKE_THE_STREAM_FROM_A_COMPUTE(compute);
+	},
+	toCompute: function(makeStream, context){
+		const setStream = MAKE_A_SETTABLE_STREAM_THAT_IS_SET_WHEN_COMPUTE_IS_SET();
+		const stream = makeStream.call(context, setStream);
 
-    const compute = MAKE_COMPUTE_TO_HAVE_VALUE_FROM_stream_AND_SET_TO_setStream;
+		const compute = MAKE_COMPUTE_TO_HAVE_VALUE_FROM_stream_AND_SET_TO_setStream;
 
-    return compute;
-  }
+		return compute;
+	}
 };
 
 import canStream from "can-stream";
