@@ -36,7 +36,7 @@ events.
 
   ```js
   var DefineList = require('can-define/list/list');
-  var canStream = require('can-stream-kefir');
+  var canStreamKefir = require('can-stream-kefir');
   var canStream = require('can-stream');
   var canStreaming = canStream(canStreamKefir);
 
