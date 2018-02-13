@@ -7,11 +7,11 @@
 
   Creates a stream based on property value change on observable
 
-  ```js
-  var map = {
+  ```javascript
+  const map = {
       foo: "bar"
   };
-  var stream = canStreaming.toStreamFromProperty(map, 'foo');
+  const stream = canStreaming.toStreamFromProperty(map, 'foo');
 
   stream.onValue(function(value){
     console.log(value); // -> foobar

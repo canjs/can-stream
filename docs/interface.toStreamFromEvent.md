@@ -7,24 +7,24 @@
 
   Creates a stream based on event on observable
 
-  ```js
-  var canStreamKefir = require('can-stream-kefir');
-  var canStream = require('can-stream');
-  var canStreaming = canStream(canStreamKefir);
+  ```javascript
+  import canStreamKefir from 'can-stream-kefir';
+  import canStream from 'can-stream';
+  const canStreaming = canStream(canStreamKefir);
 
-  var compute = require('can-compute');
-  var DefineMap = require('can-define/map/map');
-  var DefineList = require('can-define/list/list');
+  import compute from 'can-compute';
+  import DefineMap from 'can-define/map/map';
+  import DefineList from 'can-define/list/list';
 
-  var MyMap = DefineMap.extend({
+  const MyMap = DefineMap.extend({
       tasks: {
           Type: DefineList.List,
           value: []
       }
   });
-  var map = new MyMap();
+  const map = new MyMap();
 
-  var stream = canStreaming.toStreamFromEvent(map, 'tasks');
+  const stream = canStreaming.toStreamFromEvent(map, 'tasks');
 
   stream.onValue(function(ev){
       console.log('map.tasks has been updated');
@@ -43,23 +43,23 @@
 
   Creates a stream based on event trigger on observable property
 
-  ```js
-  var canStreamKefir = require('can-stream-kefir');
-  var canStream = require('can-stream');
-  var canStreaming = canStream(canStreamKefir);
-  var compute = require('can-compute');
-  var DefineMap = require('can-define/map/map');
-  var DefineList = require('can-define/list/list');
+  ```javascript
+  import canStreamKefir from 'can-stream-kefir';
+  import canStream from 'can-stream';
+  const canStreaming = canStream(canStreamKefir);
+  import compute from 'can-compute';
+  import DefineMap from 'can-define/map/map';
+  import DefineList from 'can-define/list/list';
 
-  var MyMap = DefineMap.extend({
+  const MyMap = DefineMap.extend({
       tasks: {
           Type: DefineList.List,
           value: []
       }
   });
-  var map = new MyMap();
+  const map = new MyMap();
 
-  var stream = canStreaming.toStreamFromEvent(map, 'tasks', 'length');
+  const stream = canStreaming.toStreamFromEvent(map, 'tasks', 'length');
 
   stream.onValue(function(ev){
       console.log('map.tasks has been updated');
