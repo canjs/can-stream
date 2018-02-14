@@ -11,14 +11,14 @@
 const map = {
 	foo: "bar"
 };
-const stream = canStreaming.toStreamFromProperty(map, 'foo');
+const stream = canStreaming.toStreamFromProperty( map, "foo" );
 
-stream.onValue(function(value){
-	console.log(value); // -> foobar
-});
+stream.onValue( function( value ) {
+	console.log( value ); // -> foobar
+} );
 
 map.foo = "foobar";
-  ```
+```
   @param {Observable} An observable object
   @param {String} property name
 

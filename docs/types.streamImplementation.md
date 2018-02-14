@@ -8,14 +8,14 @@
 
 ```js
 const streamImplementation = {
-	toStream: function(compute){
-		return MAKE_THE_STREAM_FROM_A_COMPUTE(compute);
+	toStream: function( compute ) {
+		return MAKE_THE_STREAM_FROM_A_COMPUTE( compute );
 	},
-	toCompute: function(makeStream, context){
-		const setStream = MAKE_A_SETTABLE_STREAM_THAT_IS_SET_WHEN_COMPUTE_IS_SET();
-		const stream = makeStream.call(context, setStream);
+	toCompute: function( makeStream, context ) {
+		const setStream = makeStream(); // make a settable stream that is set when compute is set
+		const stream = makeStream.call( context, setStream );
 
-		const compute = MAKE_COMPUTE_TO_HAVE_VALUE_FROM_stream_AND_SET_TO_setStream;
+		const compute = makeCompute(); // make compute to have value from stream and set to setStream
 
 		return compute;
 	}
@@ -23,10 +23,10 @@ const streamImplementation = {
 
 import canStream from "can-stream";
 
-const streamInterface = canStream(streamImplementation);
+const streamInterface = canStream( streamImplementation );
 
-const map = new DefineMap({name: "John"});
-streamInterface(map, ".name") //-> an instance of the stream library.
+const map = new DefineMap( { name: "John" } );
+streamInterface( map, ".name" ); //-> an instance of the stream library.
 
 export default streamInterface;
 ```

@@ -6,12 +6,12 @@
 @signature `makeStream(setStream)`
 
 ```js
-import Kefir from 'kefir';
-const count = Kefir.sequentially(1000, [1, 2]);
+import Kefir from "kefir";
+const count = Kefir.sequentially( 1000, [ 1, 2 ] );
 
-const myCompute = canStream.toCompute(function(setStream) {
-	return setStream.merge(count);
-});
+const myCompute = canStream.toCompute( function( setStream ) {
+	return setStream.merge( count );
+} );
 ```
 
 @param {Stream} setStream A stream to bind to the returned [can-compute.computed].
