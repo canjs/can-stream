@@ -8,30 +8,30 @@
   Creates a stream based on event on observable
 
   ```js
-  var canStreamKefir = require('can-stream-kefir');
-  var canStream = require('can-stream');
-  var canStreaming = canStream(canStreamKefir);
+import canStreamKefir from "can-stream-kefir";
+import canStream from "can-stream";
+const canStreaming = canStream( canStreamKefir );
 
-  var compute = require('can-compute');
-  var DefineMap = require('can-define/map/map');
-  var DefineList = require('can-define/list/list');
+import compute from "can-compute";
+import DefineMap from "can-define/map/map";
+import DefineList from "can-define/list/list";
 
-  var MyMap = DefineMap.extend({
-      tasks: {
-          Type: DefineList.List,
-          value: []
-      }
-  });
-  var map = new MyMap();
+const MyMap = DefineMap.extend( {
+	tasks: {
+		Type: DefineList.List,
+		value: []
+	}
+} );
+const map = new MyMap();
 
-  var stream = canStreaming.toStreamFromEvent(map, 'tasks');
+const stream = canStreaming.toStreamFromEvent( map, "tasks" );
 
-  stream.onValue(function(ev){
-      console.log('map.tasks has been updated');
-  });
+stream.onValue( function( ev ) {
+	console.log( "map.tasks has been updated" );
+} );
 
-  map.fooList.push('New task');
-  ```
+map.fooList.push( "New task" );
+```
 
   @param {Observable} An observable object
   @param {String} property name
@@ -44,29 +44,29 @@
   Creates a stream based on event trigger on observable property
 
   ```js
-  var canStreamKefir = require('can-stream-kefir');
-  var canStream = require('can-stream');
-  var canStreaming = canStream(canStreamKefir);
-  var compute = require('can-compute');
-  var DefineMap = require('can-define/map/map');
-  var DefineList = require('can-define/list/list');
+import canStreamKefir from "can-stream-kefir";
+import canStream from "can-stream";
+const canStreaming = canStream( canStreamKefir );
+import compute from "can-compute";
+import DefineMap from "can-define/map/map";
+import DefineList from "can-define/list/list";
 
-  var MyMap = DefineMap.extend({
-      tasks: {
-          Type: DefineList.List,
-          value: []
-      }
-  });
-  var map = new MyMap();
+const MyMap = DefineMap.extend( {
+	tasks: {
+		Type: DefineList.List,
+		value: []
+	}
+} );
+const map = new MyMap();
 
-  var stream = canStreaming.toStreamFromEvent(map, 'tasks', 'length');
+const stream = canStreaming.toStreamFromEvent( map, "tasks", "length" );
 
-  stream.onValue(function(ev){
-      console.log('map.tasks has been updated');
-  });
+stream.onValue( function( ev ) {
+	console.log( "map.tasks has been updated" );
+} );
 
-  map.fooList.push('New task');
-  ```
+map.fooList.push( "New task" );
+```
 
   @param {Observable} An observable object
   @param {String} observable property name

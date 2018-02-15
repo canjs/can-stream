@@ -8,17 +8,17 @@
   Creates a stream based on property value change on observable
 
   ```js
-  var map = {
-      foo: "bar"
-  };
-  var stream = canStreaming.toStreamFromProperty(map, 'foo');
+const map = {
+	foo: "bar"
+};
+const stream = canStreaming.toStreamFromProperty( map, "foo" );
 
-  stream.onValue(function(value){
-    console.log(value); // -> foobar
-  });
+stream.onValue( function( value ) {
+	console.log( value ); // -> foobar
+} );
 
-  map.foo = "foobar";
-  ```
+map.foo = "foobar";
+```
   @param {Observable} An observable object
   @param {String} property name
 
