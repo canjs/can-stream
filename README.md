@@ -5,8 +5,6 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/canjs/can-stream/blob/master/LICENSE)
 [![npm version](https://badge.fury.io/js/can-stream.svg)](https://www.npmjs.com/package/can-stream)
 [![Travis build status](https://travis-ci.org/canjs/can-stream.svg?branch=master)](https://travis-ci.org/canjs/can-stream)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/canjs/can-stream?branch=master&svg=true)](https://ci.appveyor.com/project/matthewp/can-stream)
-[![Coverage status](https://coveralls.io/repos/github/canjs/can-stream/badge.svg?branch=master)](https://coveralls.io/github/canjs/can-stream?branch=master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/canjs/can-stream.svg)](https://greenkeeper.io/)
 
 Stream values into and out of computes
