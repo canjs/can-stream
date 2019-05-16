@@ -287,8 +287,8 @@ QUnit.test('Stream on a property val - toStreamFromEvent', function(assert) {
 });
 
 
-QUnit.test('Convert an observable nested property into an event stream #2b', 2, function(assert) {
-
+QUnit.test('Convert an observable nested property into an event stream #2b', function(assert) {
+	assert.expect(2);
 	var MyMap = DefineMap.extend({
 		foo: {
 			value: function(){
@@ -327,8 +327,8 @@ QUnit.test('Convert an observable nested property into an event stream #2b', 2, 
 
 });
 
-QUnit.test('observable nested property event', 1, function(assert) {
-
+QUnit.test('observable nested property event', function(assert) {
+	assert.expect(1);
 	var MyMap = DefineMap.extend({
 		foo: {
 			value: function(){
@@ -569,7 +569,8 @@ QUnit.test('Update the list to undefined', function(assert) {
 	map.fooList = null;
 });
 
-QUnit.test("toStreamFromEvent passes event and other arguments", 3, function(assert) {
+QUnit.test("toStreamFromEvent passes event and other arguments", function(assert) {
+	assert.expect(3);
 	// test by testing toComputeFromEvent first
 	var myMap = new DefineMap({prop: "value"});
 
